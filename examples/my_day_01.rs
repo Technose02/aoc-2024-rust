@@ -1004,8 +1004,6 @@ const INPUT: &str = r#"47078   87818
 // endregion:   --- input part 1
 
 fn main() {
-    let output_1 = day01::part1(INPUT);
-    println!("result of part1 for my input: {output_1}");
-    let output_2 = day01::part2(INPUT);
-    println!("result of part2 for my input: {output_2}");
+    println!("result of part1 for my input: {}", day01::part1(INPUT));
+    println!("result of part2 for my input: {}", day01::part2(INPUT));
 }

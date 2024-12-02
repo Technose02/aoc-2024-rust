@@ -3,40 +3,24 @@ use std::collections::HashMap;
 use super::parse_input;
 
 pub fn part2(input: &str) -> usize {
-    let (list_a, mut list_b) = parse_input(input);
+    let (list_a, list_b) = parse_input(input);
 
-    list_b.sort();
-
-    let mut sum = 0;
-    let iter = list_a.iter();
-    let mut b_offs = 0;
-    let mut counts = HashMap::<usize, usize>::new();
-    for &n in iter {
-        let cnt = if let Some(cnt) = counts.get(&n) {
-            *cnt
+    let mut histogram_a = HashMap::new();
+    for n in list_a {
+        if let Some(cnt) = histogram_a.get_mut(&n) {
+            *cnt += 1;
         } else {
-            let mut cnt = 0_usize;
-            let slice_of_b = list_b[b_offs..].iter();
-            for &i in slice_of_b {
-                if i > n {
-                    break;
-                }
-                b_offs += 1;
-
-                if i < n {
-                    continue;
-                }
-                if i == n {
-                    cnt += 1;
-                }
-            }
-            counts.insert(n, cnt);
-            cnt
-        };
-        sum += n * cnt;
+            histogram_a.insert(n, 1);
+        }
     }
 
-    sum
+    let mut s = 0;
+    for k in list_b {
+        if let Some(cnt) = histogram_a.get(&k) {
+            s += cnt * k;
+        }
+    }
+    s
 }
 
 #[cfg(test)]
