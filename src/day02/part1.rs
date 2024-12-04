@@ -29,7 +29,7 @@ mod tests {
     const PART1_OUTPUT: usize = 2;
 
     #[test]
-    fn part1_should_work() {
+    fn day02_part1_works() {
         assert_eq!(part1(PART1_TEST_INPUT), PART1_OUTPUT);
     }
 }

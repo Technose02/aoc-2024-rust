@@ -38,7 +38,7 @@ mod tests {
     const PART2_OUTPUT: usize = 31;
 
     #[test]
-    fn part2_should_work() {
+    fn day01_part2_works() {
         assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
     }
 }
