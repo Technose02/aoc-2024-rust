@@ -1,6 +1,9 @@
 mod part1;
 mod part2;
 
+pub use part1::part1;
+pub use part2::part2;
+
 pub struct SplitSlice<'a> {
     slices: (&'a [i32], &'a [i32]),
     idx: usize,
@@ -79,5 +82,29 @@ pub fn record_is_safe(levels: impl IntoIterator<Item = i32>) -> bool {
     true
 }
 
-pub use part1::part1;
-pub use part2::part2;
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    const TEST_INPUT: &str = r#"7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9"#;
+
+    const PART1_OUTPUT: usize = 2;
+
+    #[test]
+    fn day02_part1_works() {
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
+    }
+
+    const PART2_OUTPUT: usize = 4;
+
+    #[test]
+    fn day02_part2_works() {
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
+    }
+}

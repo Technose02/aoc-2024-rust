@@ -7,6 +7,8 @@ pub use part2::part2;
 #[cfg(test)]
 mod tests {
 
+    use super::*;
+
     const TEST_INPUT: &str = r#"MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
@@ -22,13 +24,13 @@ MXMXAXMASX"#;
 
     #[test]
     fn day_04_part1_works() {
-        assert_eq!(super::part1(TEST_INPUT), PART1_OUTPUT);
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
     const PART2_OUTPUT: usize = 9;
 
     #[test]
     fn day_04_part2_works() {
-        assert_eq!(super::part2(TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }
 }

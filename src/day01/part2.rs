@@ -22,23 +22,3 @@ pub fn part2(input: &str) -> usize {
     }
     s
 }
-
-#[cfg(test)]
-mod tests {
-
-    use super::part2;
-
-    const PART2_TEST_INPUT: &str = r#"3   4
-4   3
-2   5
-1   3
-3   9
-3   3"#;
-
-    const PART2_OUTPUT: usize = 31;
-
-    #[test]
-    fn day01_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
-    }
-}

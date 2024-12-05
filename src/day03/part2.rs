@@ -124,19 +124,3 @@ fn get_first_mult_and_cursor(
 
     (Some(num1 * num2), true, offset, true)
 }
-
-#[cfg(test)]
-mod tests {
-
-    use super::part2;
-
-    const PART2_TEST_INPUT: &str =
-        r#"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"#;
-
-    const PART2_OUTPUT: usize = 48;
-
-    #[test]
-    fn day03_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
-    }
-}
