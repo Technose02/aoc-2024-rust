@@ -5,9 +5,8 @@ pub use part1::part1;
 pub use part2::part2;
 
 type Rules = Vec<(u32, u32)>;
-type Update = Vec<u32>;
 
-fn parse_input(input: &str) -> (Rules, Vec<Update>) {
+fn parse_input(input: &str) -> (Rules, Vec<Vec<u32>>) {
     let mut rules = Vec::new();
     let mut updates = Vec::new();
 
@@ -37,12 +36,40 @@ fn parse_input(input: &str) -> (Rules, Vec<Update>) {
     (rules, updates)
 }
 
+fn filter_relevant_rules(rules: Rules, update: &[u32]) -> Rules {
+    rules
+        .into_iter()
+        .filter(|r| update.contains(&r.0) && update.contains(&r.1))
+        .collect::<Rules>()
+}
+
+fn check_update(rules: Rules, update: &[u32]) -> bool {
+    if update.is_empty() || rules.is_empty() {
+        return true;
+    }
+    let l = update.len();
+
+    let mut new_ruleset = Vec::new();
+
+    let last_page = update[l - 1];
+    for r in rules {
+        if r.0 == last_page {
+            return false;
+        }
+        if r.1 != last_page {
+            new_ruleset.push(r);
+        }
+    }
+
+    check_update(new_ruleset, &update[0..l - 1])
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
 
-    const PART1_TEST_INPUT: &str = r#"47|53
+    const TEST_INPUT: &str = r#"47|53
 97|13
 97|61
 97|47
@@ -71,25 +98,23 @@ mod tests {
 61,13,29
 97,13,75,29,47"#;
 
-    const PART1_OUTPUT: usize = 0;
+    const PART1_OUTPUT: usize = 143;
 
     #[test]
     fn day05_part1_works() {
-        assert_eq!(part1(PART1_TEST_INPUT), PART1_OUTPUT);
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
-    const PART2_TEST_INPUT: &str = r#""#;
-
-    const PART2_OUTPUT: usize = 0;
+    const PART2_OUTPUT: usize = 123;
 
     #[test]
     fn day05_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }
 
     #[test]
     fn parse_input_works() {
-        let (rules, updates) = parse_input(PART1_TEST_INPUT);
+        let (rules, updates) = parse_input(TEST_INPUT);
         assert_eq!(rules.len(), 21);
         assert_eq!(rules[0], (47, 53));
         assert_eq!(rules[1], (97, 13));

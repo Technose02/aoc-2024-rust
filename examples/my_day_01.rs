@@ -1,6 +1,6 @@
 use aoc2024_rust::day01;
 
-// region:      --- input part 1
+// region:      --- input
 const INPUT: &str = r#"47078   87818
 99261   15906
 44723   23473
@@ -1001,7 +1001,7 @@ const INPUT: &str = r#"47078   87818
 47369   11182
 34359   84179
 45592   15347"#;
-// endregion:   --- input part 1
+// endregion:   --- input
 
 fn main() {
     println!("result of part1 for my input: {}", day01::part1(INPUT));
