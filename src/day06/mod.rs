@@ -86,13 +86,13 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .filter(|j| *j < pos.0)
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
-                    for v in 0..pos.0 {
+                    for v in (0..pos.0).rev() {
                         on_visit((v, pos.1), Orientation::Up);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| b.cmp(&a));
-                for v in obstacles[0] + 1..pos.0 {
+                for v in (obstacles[0] + 1..pos.0).rev() {
                     on_visit((v, pos.1), Orientation::Up);
                 }
                 pos = (obstacles[0] + 1, pos.1);
@@ -152,13 +152,13 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .filter(|j| *j < pos.1)
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
-                    for v in 0..pos.1 {
+                    for v in (0..pos.1).rev() {
                         on_visit((pos.0, v), Orientation::Left);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| b.cmp(&a));
-                for v in obstacles[0] + 1..pos.1 {
+                for v in (obstacles[0] + 1..pos.1).rev() {
                     on_visit((pos.0, v), Orientation::Left);
                 }
                 pos = (pos.0, obstacles[0] + 1);
