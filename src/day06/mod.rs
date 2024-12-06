@@ -54,6 +54,7 @@ fn parse_input(input: &str) -> InputStats {
     }
 }
 
+#[derive(PartialEq, Hash, Debug, Clone, Copy)]
 enum Orientation {
     Up,
     Down,
@@ -61,7 +62,9 @@ enum Orientation {
     Right,
 }
 
-fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usize), &Orientation)) {
+impl Eq for Orientation {}
+
+fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usize), Orientation)) {
     let InputStats {
         mut pos,
         mut orientation,
@@ -70,7 +73,7 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
         map_size: (row_count, col_count),
     } = input_stats;
 
-    on_visit(pos, &orientation);
+    on_visit(pos, orientation);
 
     loop {
         match orientation {
@@ -84,17 +87,17 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
                     for v in 0..pos.0 {
-                        on_visit((v, pos.1), &Orientation::Up);
+                        on_visit((v, pos.1), Orientation::Up);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| b.cmp(&a));
                 for v in obstacles[0] + 1..pos.0 {
-                    on_visit((v, pos.1), &Orientation::Up);
+                    on_visit((v, pos.1), Orientation::Up);
                 }
                 pos = (obstacles[0] + 1, pos.1);
                 orientation = Orientation::Right;
-                on_visit((obstacles[0] + 1, pos.1), &Orientation::Right);
+                on_visit((obstacles[0] + 1, pos.1), Orientation::Right);
             }
             Orientation::Right => {
                 let mut obstacles = obstacles_by_row
@@ -106,17 +109,17 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
                     for v in pos.1 + 1..col_count {
-                        on_visit((pos.0, v), &Orientation::Right);
+                        on_visit((pos.0, v), Orientation::Right);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| a.cmp(&b));
                 for v in pos.1 + 1..obstacles[0] {
-                    on_visit((pos.0, v), &Orientation::Right);
+                    on_visit((pos.0, v), Orientation::Right);
                 }
                 pos = (pos.0, obstacles[0] - 1);
                 orientation = Orientation::Down;
-                on_visit((pos.0, obstacles[0] - 1), &Orientation::Down);
+                on_visit((pos.0, obstacles[0] - 1), Orientation::Down);
             }
             Orientation::Down => {
                 let mut obstacles = obstacles_by_col
@@ -128,17 +131,17 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
                     for v in pos.0 + 1..row_count {
-                        on_visit((v, pos.1), &Orientation::Down);
+                        on_visit((v, pos.1), Orientation::Down);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| a.cmp(&b));
                 for v in pos.0 + 1..obstacles[0] {
-                    on_visit((v, pos.1), &Orientation::Down);
+                    on_visit((v, pos.1), Orientation::Down);
                 }
                 pos = (obstacles[0] - 1, pos.1);
                 orientation = Orientation::Left;
-                on_visit((obstacles[0] - 1, pos.1), &Orientation::Left);
+                on_visit((obstacles[0] - 1, pos.1), Orientation::Left);
             }
             Orientation::Left => {
                 let mut obstacles = obstacles_by_row
@@ -150,17 +153,17 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
                     for v in 0..pos.1 {
-                        on_visit((pos.0, v), &Orientation::Left);
+                        on_visit((pos.0, v), Orientation::Left);
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| b.cmp(&a));
                 for v in obstacles[0] + 1..pos.1 {
-                    on_visit((pos.0, v), &Orientation::Left);
+                    on_visit((pos.0, v), Orientation::Left);
                 }
                 pos = (pos.0, obstacles[0] + 1);
                 orientation = Orientation::Up;
-                on_visit((pos.0, obstacles[0] + 1), &Orientation::Up);
+                on_visit((pos.0, obstacles[0] + 1), Orientation::Up);
             }
         }
     }
@@ -171,7 +174,7 @@ mod tests {
 
     use super::*;
 
-    const PART1_TEST_INPUT: &str = r#"....#.....
+    const TEST_INPUT: &str = r#"....#.....
 .........#
 ..........
 ..#.......
@@ -186,15 +189,13 @@ mod tests {
 
     #[test]
     fn day06_part1_works() {
-        assert_eq!(part1(PART1_TEST_INPUT), PART1_OUTPUT);
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
-
-    const PART2_TEST_INPUT: &str = r#""#;
 
     const PART2_OUTPUT: usize = 0;
 
     #[test]
     fn day06_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }
 }
