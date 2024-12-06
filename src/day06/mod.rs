@@ -9,9 +9,18 @@ mod tests {
 
     use super::*;
 
-    const PART1_TEST_INPUT: &str = r#""#;
+    const PART1_TEST_INPUT: &str = r#"....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#..."#;
 
-    const PART1_OUTPUT: usize = 0;
+    const PART1_OUTPUT: usize = 41;
 
     #[test]
     fn day06_part1_works() {
