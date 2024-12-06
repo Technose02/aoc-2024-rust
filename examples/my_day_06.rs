@@ -135,5 +135,5 @@ const INPUT: &str = r#"#.............#.#........................................
 
 fn main() {
     println!("result of part1 for my input: {}", day06::part1(INPUT));
-    //println!("result of part2 for my input: {}", day06::part2(INPUT));
+    println!("result of part2 for my input: {}", day06::part2(INPUT));
 }

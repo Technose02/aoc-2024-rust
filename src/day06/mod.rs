@@ -101,13 +101,16 @@ fn process_visits(
     loop {
         match orientation {
             Orientation::Up => {
-                let mut obstacles = obstacles_by_col
-                    .get(&pos.1)
-                    .unwrap()
-                    .iter()
-                    .copied()
-                    .filter(|j| *j < pos.0)
-                    .collect::<Vec<usize>>();
+                let mut obstacles = {
+                    if let Some(v) = obstacles_by_col.get(&pos.1) {
+                        v.iter()
+                            .copied()
+                            .filter(|j| *j < pos.0)
+                            .collect::<Vec<usize>>()
+                    } else {
+                        vec![]
+                    }
+                };
                 if obstacles.is_empty() {
                     for v in (0..pos.0).rev() {
                         on_visit((v, pos.1), Orientation::Up);
@@ -123,13 +126,16 @@ fn process_visits(
                 on_visit((obstacles[0] + 1, pos.1), Orientation::Right);
             }
             Orientation::Right => {
-                let mut obstacles = obstacles_by_row
-                    .get(&pos.0)
-                    .unwrap()
-                    .iter()
-                    .copied()
-                    .filter(|j| *j > pos.1)
-                    .collect::<Vec<usize>>();
+                let mut obstacles = {
+                    if let Some(v) = obstacles_by_row.get(&pos.0) {
+                        v.iter()
+                            .copied()
+                            .filter(|j| *j > pos.1)
+                            .collect::<Vec<usize>>()
+                    } else {
+                        vec![]
+                    }
+                };
                 if obstacles.is_empty() {
                     for v in pos.1 + 1..col_count {
                         on_visit((pos.0, v), Orientation::Right);
@@ -145,13 +151,16 @@ fn process_visits(
                 on_visit((pos.0, obstacles[0] - 1), Orientation::Down);
             }
             Orientation::Down => {
-                let mut obstacles = obstacles_by_col
-                    .get(&pos.1)
-                    .unwrap()
-                    .iter()
-                    .copied()
-                    .filter(|j| *j > pos.0)
-                    .collect::<Vec<usize>>();
+                let mut obstacles = {
+                    if let Some(v) = obstacles_by_col.get(&pos.1) {
+                        v.iter()
+                            .copied()
+                            .filter(|j| *j > pos.0)
+                            .collect::<Vec<usize>>()
+                    } else {
+                        vec![]
+                    }
+                };
                 if obstacles.is_empty() {
                     for v in pos.0 + 1..row_count {
                         on_visit((v, pos.1), Orientation::Down);
@@ -167,13 +176,16 @@ fn process_visits(
                 on_visit((obstacles[0] - 1, pos.1), Orientation::Left);
             }
             Orientation::Left => {
-                let mut obstacles = obstacles_by_row
-                    .get(&pos.0)
-                    .unwrap()
-                    .iter()
-                    .copied()
-                    .filter(|j| *j < pos.1)
-                    .collect::<Vec<usize>>();
+                let mut obstacles = {
+                    if let Some(v) = obstacles_by_row.get(&pos.0) {
+                        v.iter()
+                            .copied()
+                            .filter(|j| *j < pos.1)
+                            .collect::<Vec<usize>>()
+                    } else {
+                        vec![]
+                    }
+                };
                 if obstacles.is_empty() {
                     for v in (0..pos.1).rev() {
                         if !on_visit((pos.0, v), Orientation::Left) {
