@@ -154,6 +154,7 @@ pub fn part1(input: &str) -> usize {
         }
     }
 
+    /* // print map für debugging (only for small samples!)
     let mut obstacles = HashSet::<(usize, usize)>::new();
     for (j, v) in obstacles_by_row {
         for i in v {
@@ -161,7 +162,6 @@ pub fn part1(input: &str) -> usize {
         }
     }
 
-    /*
     let mut map = String::new();
     for j in 0..row_count {
         for i in 0..col_count {
