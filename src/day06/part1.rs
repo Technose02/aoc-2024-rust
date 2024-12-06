@@ -6,6 +6,7 @@ pub fn part1(input: &str) -> usize {
 
     process_visits(parse_input(input), |pos, _| {
         visited.insert(pos);
+        true
     });
 
     /* // print map für debugging (only for small samples!)

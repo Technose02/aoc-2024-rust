@@ -6,12 +6,30 @@ mod part2;
 pub use part1::part1;
 pub use part2::part2;
 
+#[derive(Clone)]
 struct InputStats {
     pos: (usize, usize),
     orientation: Orientation,
     obstacles_by_row: HashMap<usize, Vec<usize>>,
     obstacles_by_col: HashMap<usize, Vec<usize>>,
     map_size: (usize, usize),
+}
+
+impl InputStats {
+    pub fn add_obstacle(&mut self, at: (usize, usize)) {
+        let (row, col) = at;
+        if let Some(v) = self.obstacles_by_col.get_mut(&col) {
+            v.push(row);
+        } else {
+            self.obstacles_by_col.insert(col, vec![row]);
+        }
+
+        if let Some(v) = self.obstacles_by_row.get_mut(&row) {
+            v.push(col);
+        } else {
+            self.obstacles_by_row.insert(row, vec![col]);
+        }
+    }
 }
 
 fn parse_input(input: &str) -> InputStats {
@@ -64,7 +82,10 @@ enum Orientation {
 
 impl Eq for Orientation {}
 
-fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usize), Orientation)) {
+fn process_visits(
+    input_stats: InputStats,
+    mut on_visit: impl FnMut((usize, usize), Orientation) -> bool,
+) {
     let InputStats {
         mut pos,
         mut orientation,
@@ -73,7 +94,9 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
         map_size: (row_count, col_count),
     } = input_stats;
 
-    on_visit(pos, orientation);
+    if !on_visit(pos, orientation) {
+        return;
+    }
 
     loop {
         match orientation {
@@ -153,17 +176,23 @@ fn process_visits(input_stats: InputStats, mut on_visit: impl FnMut((usize, usiz
                     .collect::<Vec<usize>>();
                 if obstacles.is_empty() {
                     for v in (0..pos.1).rev() {
-                        on_visit((pos.0, v), Orientation::Left);
+                        if !on_visit((pos.0, v), Orientation::Left) {
+                            return;
+                        };
                     }
                     break;
                 }
                 obstacles.sort_by(|&a, &b| b.cmp(&a));
                 for v in (obstacles[0] + 1..pos.1).rev() {
-                    on_visit((pos.0, v), Orientation::Left);
+                    if !on_visit((pos.0, v), Orientation::Left) {
+                        return;
+                    }
                 }
                 pos = (pos.0, obstacles[0] + 1);
                 orientation = Orientation::Up;
-                on_visit((pos.0, obstacles[0] + 1), Orientation::Up);
+                if !on_visit((pos.0, obstacles[0] + 1), Orientation::Up) {
+                    return;
+                }
             }
         }
     }
@@ -192,7 +221,7 @@ mod tests {
         assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
-    const PART2_OUTPUT: usize = 0;
+    const PART2_OUTPUT: usize = 6;
 
     #[test]
     fn day06_part2_works() {
