@@ -1,0 +1,49 @@
+== Puzzle-Solvers for Advent-of-Code 2024
+
+My first attempt in taking the challenges in Rust - fantastic choice after all.
+
+=== Progress
+
+* Day 01
+** [x] Part 1
+** [x] Part 2
+* Day 02
+** [x] Part 1
+** [x] Part 2
+* Day 03
+** [x] Part 1
+** [x] Part 2
+* Day 04
+** [x] Part 1
+** [x] Part 2
+* Day 05
+** [x] Part 1
+** [x] Part 2
+* Day 06
+** [x] Part 1
+** [x] Part 2
+* Day 07
+** [x] Part 1
+** [x] Part 2
+
+=== Performance 
+
+.Some samples of computation-durations (for my testdata)
+|===
+|Challenge |Part |Duration-Sample (__release build__) in ms
+
+|Day 01 |1 |0
+|Day 01 |2 |0
+|Day 02 |1 |0
+|Day 02 |2 |0
+|Day 03 |1 |0
+|Day 03 |2 |1
+|Day 04 |1 |2
+|Day 04 |2 |3
+|Day 05 |1 |2
+|Day 05 |2 |7
+|Day 06 |1 |0
+|Day 06 |2 |230
+|Day 07 |1 |0
+|Day 07 |2 |3
+|===
