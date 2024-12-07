@@ -32,32 +32,12 @@ impl Equation {
     }
 }
 
-fn check_equation(equation: &Equation) -> bool {
-    let Equation { test_value, args } = equation;
-    let l = args.len();
-    if l == 2 {
-        let a = args[0];
-        let b = args[1];
-        return *test_value == a + b || *test_value == a * b;
-    }
-    let last = *args.last().unwrap();
-    match (*test_value % last == 0, *test_value > last) {
-        (true, true) => {
-            check_equation(&Equation::from_parts(*test_value / last, &args[..l - 1]))
-                || check_equation(&Equation::from_parts(*test_value - last, &args[..l - 1]))
-        }
-        (true, false) => check_equation(&Equation::from_parts(*test_value / last, &args[..l - 1])),
-        (false, true) => check_equation(&Equation::from_parts(*test_value - last, &args[..l - 1])),
-        (false, false) => false,
-    }
-}
-
 #[cfg(test)]
 mod tests {
 
     use super::*;
 
-    const PART1_TEST_INPUT: &str = r#"190: 10 19
+    const TEST_INPUT: &str = r#"190: 10 19
 3267: 81 40 27
 83: 17 5
 156: 15 6
@@ -71,23 +51,13 @@ mod tests {
 
     #[test]
     fn day07_part1_works() {
-        assert_eq!(part1(PART1_TEST_INPUT), PART1_OUTPUT);
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
-    const PART2_TEST_INPUT: &str = r#"190: 10 19
-3267: 81 40 27
-83: 17 5
-156: 15 6
-7290: 6 8 6 15
-161011: 16 10 13
-192: 17 8 14
-21037: 9 7 18 13
-292: 11 6 16 20"#;
-
-    const PART2_OUTPUT: usize = 0;
+    const PART2_OUTPUT: usize = 11387;
 
     #[test]
     fn day07_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }
 }

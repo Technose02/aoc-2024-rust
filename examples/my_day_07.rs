@@ -855,5 +855,5 @@ const INPUT: &str = r#"237069504000: 96 30 30 28 139 705
 
 fn main() {
     println!("result of part1 for my input: {}", day07::part1(INPUT));
-    //println!("result of part2 for my input: {}", day07::part2(INPUT));
+    println!("result of part2 for my input: {}", day07::part2(INPUT));
 }
