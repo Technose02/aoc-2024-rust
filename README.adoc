@@ -30,20 +30,20 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 
 .Some samples of computation-durations (for my testdata)
 |===
-|Challenge |Part |Duration-Sample (__release build__) in ms
+|challenge |part |average computation-duration (__release build__) in ms
 
-|Day 01 |1 |0
-|Day 01 |2 |0
-|Day 02 |1 |0
-|Day 02 |2 |0
-|Day 03 |1 |0
-|Day 03 |2 |1
-|Day 04 |1 |2
-|Day 04 |2 |3
-|Day 05 |1 |2
-|Day 05 |2 |7
-|Day 06 |1 |0
-|Day 06 |2 |230
-|Day 07 |1 |0
-|Day 07 |2 |3
+|day 01 |1 |0
+|day 01 |2 |0
+|day 02 |1 |0
+|day 02 |2 |0
+|day 03 |1 |0
+|day 03 |2 |1
+|day 04 |1 |2
+|day 04 |2 |3
+|day 05 |1 |2
+|day 05 |2 |7
+|day 06 |1 |0
+|day 06 |2 |230
+|day 07 |1 |0
+|day 07 |2 |3
 |===
