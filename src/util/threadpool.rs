@@ -1,3 +1,10 @@
+/**
+This is the implementation for a simple ThreadPool from
+The Rust Programming Language
+by Steve Klabnik and Carol Nichols, with contributions from the Rust Community
+
+all credit goes to the original authors
+**/
 use std::sync::{
     mpsc::{channel, Receiver, Sender},
     Arc, Mutex,
