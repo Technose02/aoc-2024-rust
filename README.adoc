@@ -4,27 +4,27 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 
 === Progress
 
-* Day 01
-** [x] Part 1
-** [x] Part 2
-* Day 02
-** [x] Part 1
-** [x] Part 2
-* Day 03
-** [x] Part 1
-** [x] Part 2
-* Day 04
-** [x] Part 1
-** [x] Part 2
-* Day 05
-** [x] Part 1
-** [x] Part 2
-* Day 06
-** [x] Part 1
-** [x] Part 2
-* Day 07
-** [x] Part 1
-** [x] Part 2
+* day 01
+** [x] part 1
+** [x] part 2
+* day 02
+** [x] part 1
+** [x] part 2
+* day 03
+** [x] part 1
+** [x] part 2
+* day 04
+** [x] part 1
+** [x] part 2
+* day 05
+** [x] part 1
+** [x] part 2
+* day 06
+** [x] part 1
+** [x] part 2
+* day 07
+** [x] part 1
+** [x] part 2
 
 === Performance 
 
