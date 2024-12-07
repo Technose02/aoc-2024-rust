@@ -1,6 +1,9 @@
-use std::collections::HashSet;
+use std::{
+    collections::HashSet,
+    sync::{Arc, Mutex},
+};
 
-use crate::day06::InputStats;
+use crate::{day06::InputStats, util::ThreadPool};
 
 use super::{parse_input, process_visits, Orientation};
 
@@ -33,37 +36,22 @@ pub fn part2(input: &str) -> usize {
     });
 
     // Now we have to check each visited position (others are irrelevant) in regard of being a potential obstruction for enforcing a loop
-    let mut obstructions = HashSet::<(usize, usize)>::new();
+    let obstructions = Arc::new(Mutex::new(HashSet::<(usize, usize)>::new()));
 
-    for p in visited {
-        if check_for_potential_obstruction(p, input_stats.clone()) {
-            obstructions.insert(p);
+    {
+        let pool = ThreadPool::new(16);
+        for p in visited {
+            {
+                let p = p.to_owned();
+                let input_stats = input_stats.clone();
+                let obstructions = obstructions.clone();
+                pool.execute(move || {
+                    if check_for_potential_obstruction(p, input_stats.clone()) {
+                        obstructions.lock().unwrap().insert(p);
+                    }
+                });
+            }
         }
     }
-
-    /*
-       for k in 1..visited_with_orientation.len() {
-           if obstructions.contains(&visited_with_orientation[k].0) {
-               continue;
-           }
-           let prev = visited_with_orientation[k - 1];
-
-           let orientation_if_obstruction_at_cur_pos = prev.1.turn_right();
-
-           let mut potential_pos = prev.0;
-           loop {
-               potential_pos =
-           }
-
-           let pos_if_obstruction_at_cur_pos = orientation_if_obstruction_at_cur_pos.step_from(prev.0);
-           if visited_with_orientation[0..k].contains(&(
-               pos_if_obstruction_at_cur_pos,
-               orientation_if_obstruction_at_cur_pos,
-           )) {
-               println!("put obstruction at {:?}", visited_with_orientation[k].0);
-               obstructions.insert(visited_with_orientation[k].0);
-           }
-       }
-    */
-    obstructions.len()
+    obstructions.clone().lock().unwrap().len()
 }
