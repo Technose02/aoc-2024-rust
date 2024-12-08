@@ -28,6 +28,9 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 * day 08
 ** [x] part 1
 ** [x] part 2
+* day 09
+** [ ] part 1
+** [ ] part 2
 
 === Performance 
 
@@ -51,4 +54,6 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 |day 07 |2 |2
 |day 08 |1 |0
 |day 08 |2 |0
+|day 09 |1 | ``--``
+|day 09 |2 | ``--``
 |===
