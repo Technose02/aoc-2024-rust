@@ -1,9 +1,51 @@
-use super::{diff, normalize_diff, parse_antenna_maps};
-use std::{collections::HashSet, usize};
+use super::{diff, parse_antenna_maps};
+use std::{collections::HashSet, ops::Neg};
 
 fn dist(p0: (i64, i64), p1: (i64, i64)) -> i64 {
-    let d = diff(p0, p1);
+    let d = diff(p0, p1, false);
     (d.0.abs() + d.1.abs()) as i64
+}
+
+fn collect_grid_positions_in_line(
+    p0: (i64, i64),
+    p1: (i64, i64),
+    width: i64,
+    height: i64,
+    set: &mut HashSet<(i64, i64)>,
+) {
+    let dir = diff(p0, p1, true);
+    //set.insert(p0);
+
+    ///////////
+    let mut iter_pos = p0;
+    loop {
+        iter_pos = (iter_pos.0 + dir.0, iter_pos.1 + dir.1);
+        if !(0..height).contains(&iter_pos.0) || !(0..width).contains(&iter_pos.1) {
+            break;
+        }
+        let d0 = dist(p0, iter_pos);
+        let d1 = dist(p1, iter_pos);
+        if d0 == 2 * d1 || 2 * d0 == d1 {
+            set.insert(iter_pos);
+        }
+    }
+    ///////////
+
+    ///////////
+    iter_pos = p0;
+    let dir = (dir.0.neg(), dir.1.neg());
+    loop {
+        iter_pos = (iter_pos.0 + dir.0, iter_pos.1 + dir.1);
+        if !(0..height).contains(&iter_pos.0) || !(0..width).contains(&iter_pos.1) {
+            break;
+        }
+        let d0 = dist(p0, iter_pos);
+        let d1 = dist(p1, iter_pos);
+        if d0 == 2 * d1 || 2 * d0 == d1 {
+            set.insert(iter_pos);
+        }
+    }
+    ///////////
 }
 
 pub fn part1(input: &str) -> usize {
@@ -17,63 +59,7 @@ pub fn part1(input: &str) -> usize {
                 let p0 = antenna_positions[idx0];
                 let p1 = antenna_positions[idx1];
 
-                let dir10: (i64, i64) = normalize_diff(diff(p0, p1));
-
-                let mut step = 0_i64;
-                loop {
-                    step += 1;
-                    let pos = (p0.0 + step * dir10.0, p0.1 + step * dir10.1);
-                    if pos.0 < 0 || pos.1 < 0 || pos.0 >= height as i64 || pos.1 >= width as i64 {
-                        break;
-                    }
-                    let d0 = dist(p0, pos);
-                    let d1 = dist(p1, pos);
-                    if d0 == 2 * d1 || 2 * d0 == d1 {
-                        antinodes.insert(pos);
-                    }
-                }
-                let mut step = 0_i64;
-                loop {
-                    step -= 1;
-                    let pos = (p0.0 + step * dir10.0, p0.1 + step * dir10.1);
-                    if pos.0 < 0 || pos.1 < 0 || pos.0 >= height as i64 || pos.1 >= width as i64 {
-                        break;
-                    }
-                    let d0 = dist(p0, pos);
-                    let d1 = dist(p1, pos);
-                    if d0 == 2 * d1 || 2 * d0 == d1 {
-                        antinodes.insert(pos);
-                    }
-                }
-
-                let dir01: (i64, i64) = normalize_diff(diff(p1, p0));
-
-                step = 0;
-                loop {
-                    step += 1;
-                    let pos = (p1.0 + step * dir01.0, p1.1 + step * dir01.1);
-                    if pos.0 < 0 || pos.1 < 0 || pos.0 >= height as i64 || pos.1 >= width as i64 {
-                        break;
-                    }
-                    let d0 = dist(p0, pos);
-                    let d1 = dist(p1, pos);
-                    if d1 == 2 * d0 || d0 == 2 * d1 {
-                        antinodes.insert(pos);
-                    }
-                }
-                step = 0;
-                loop {
-                    step -= 1;
-                    let pos = (p1.0 + step * dir01.0, p1.1 + step * dir01.1);
-                    if pos.0 < 0 || pos.1 < 0 || pos.0 >= height as i64 || pos.1 >= width as i64 {
-                        break;
-                    }
-                    let d0 = dist(p0, pos);
-                    let d1 = dist(p1, pos);
-                    if d1 == 2 * d0 || d0 == 2 * d1 {
-                        antinodes.insert(pos);
-                    }
-                }
+                collect_grid_positions_in_line(p0, p1, width as i64, height as i64, &mut antinodes);
             }
         }
     }
@@ -87,15 +73,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn normalize_diff_should_work() {
-        assert_eq!((1, 5), normalize_diff((1, 5)));
-        assert_eq!((1, 5), normalize_diff((2, 10)));
-        assert_eq!((3, 5), normalize_diff((3, 5)));
-        assert_eq!((-1, 7), normalize_diff((-1, 7)));
-        assert_eq!((-2, 7), normalize_diff((-2, 7)));
-        assert_eq!((-1, 4), normalize_diff((-2, 8)));
-        assert_eq!((1, -4), normalize_diff((2, -8)));
-        assert_eq!((1, -7), normalize_diff((1, -7)));
-        assert_eq!((2, -7), normalize_diff((2, -7)));
+    fn normalized_diff_should_work() {
+        assert_eq!((1, 5), diff((1, 5), (0, 0), true));
+        assert_eq!((1, 5), diff((2, 10), (0, 0), true));
+        assert_eq!((3, 5), diff((3, 5), (0, 0), true));
+        assert_eq!((-1, 7), diff((-1, 7), (0, 0), true));
+        assert_eq!((-2, 7), diff((-2, 7), (0, 0), true));
+        assert_eq!((-1, 4), diff((-2, 8), (0, 0), true));
+        assert_eq!((1, -4), diff((2, -8), (0, 0), true));
+        assert_eq!((1, -7), diff((1, -7), (0, 0), true));
+        assert_eq!((2, -7), diff((2, -7), (0, 0), true));
     }
 }

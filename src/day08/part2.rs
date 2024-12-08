@@ -1,4 +1,4 @@
-use super::{diff, normalize_diff, parse_antenna_maps};
+use super::{diff, parse_antenna_maps};
 use std::{collections::HashSet, ops::Neg};
 
 fn collect_positions(
@@ -27,7 +27,7 @@ fn collect_grid_positions_in_line(
     height: i64,
     set: &mut HashSet<(i64, i64)>,
 ) {
-    let dir = normalize_diff(diff(p0, p1));
+    let dir = diff(p0, p1, true);
     set.insert(p0);
     collect_positions(p0, dir, (0, 0), (height - 1, width - 1), set);
     collect_positions(
@@ -44,7 +44,7 @@ pub fn part2(input: &str) -> usize {
 
     let mut antinodes = HashSet::<(i64, i64)>::new();
     {
-        for (_, antenna_positions) in &antennas_by_frequency {
+        for antenna_positions in antennas_by_frequency.values() {
             let antenna_positions = antenna_positions.clone();
             for idx0 in 0..antenna_positions.len() - 1 {
                 for idx1 in idx0 + 1..antenna_positions.len() {

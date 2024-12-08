@@ -5,25 +5,26 @@ mod part2;
 pub use part1::part1;
 pub use part2::part2;
 
-fn diff(p1: (i64, i64), p0: (i64, i64)) -> (i64, i64) {
-    (p1.0 - p0.0, p1.1 - p0.1)
-}
-
-fn normalize_diff(diff: (i64, i64)) -> (i64, i64) {
-    let x = if diff.0.abs() <= diff.1.abs() {
-        diff.0
-    } else {
-        diff.1
-    };
-    for d in (2..=x.abs()).rev() {
-        if diff.0 % d == 0 && diff.1 % d == 0 {
-            return (diff.0 / d, diff.1 / d);
+fn diff(p1: (i64, i64), p0: (i64, i64), normalized: bool) -> (i64, i64) {
+    let diff = (p1.0 - p0.0, p1.1 - p0.1);
+    if normalized {
+        let x = if diff.0.abs() <= diff.1.abs() {
+            diff.0
+        } else {
+            diff.1
+        };
+        for d in (2..=x.abs()).rev() {
+            if diff.0 % d == 0 && diff.1 % d == 0 {
+                return (diff.0 / d, diff.1 / d);
+            }
         }
     }
     diff
 }
 
-fn parse_antenna_maps(input: &str) -> (usize, usize, HashMap<char, Vec<(i64, i64)>>) {
+type InputStats = (usize, usize, HashMap<char, Vec<(i64, i64)>>);
+
+fn parse_antenna_maps(input: &str) -> InputStats {
     let mut antennas_by_frequency = HashMap::<char, Vec<(i64, i64)>>::new();
 
     let height = input.lines().count();
