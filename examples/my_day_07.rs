@@ -3,9 +3,10 @@ use std::time::Instant;
 
 fn main() {
     let input = &load_input("input_day_07.txt");
-    let start = Instant::now();
+    let mut start = Instant::now();
     println!("result of part1 for my input: {}", day07::part1(input));
     let dur_1 = start.elapsed();
+    start = Instant::now();
     println!("result of part2 for my input: {}", day07::part2(input));
     let dur_2 = start.elapsed();
 
