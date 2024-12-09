@@ -18,10 +18,9 @@ mod tests {
         assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
-    const PART2_OUTPUT: usize = 0;
+    const PART2_OUTPUT: usize = 2858;
 
     #[test]
-    #[ignore = "day09 part1 not yet implemented"]
     fn day09_part2_works() {
         assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }

@@ -10,7 +10,6 @@ fn test_part_1() {
 }
 
 #[test]
-#[ignore = "day09 part1 not yet implemented"]
 fn test_part_2() {
     let (input, _, output_2) = &load_data("input_day_09.txt", "output_day_09.txt");
     assert_eq!(day09::part2(input), output_2.parse::<usize>().unwrap());
