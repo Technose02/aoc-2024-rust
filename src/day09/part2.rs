@@ -34,11 +34,12 @@ pub fn part2(input: &str) -> usize {
                 //move file from file_pos to gap_pos
                 files_by_position_after_move.insert(gap_pos, (file_id, file_size));
 
-                gaps[i] = (file_pos, file_size);
                 if gap_size > file_size {
-                    gaps.push((gap_pos + file_size, gap_size - file_size));
+                    gaps[i] = (gap_pos + file_size, gap_size - file_size);
+                } else {
+                    gaps.remove(i);
                 }
-                gaps.sort_by_key(|&a| (a.0 as i32));
+                gaps.push((file_pos, file_size));
                 break;
             }
         }
