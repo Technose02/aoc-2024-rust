@@ -1,5 +1,3 @@
-#![allow(unused_variables)]
-
 use aoc2024_rust::day09;
 use aoc2024_rust::util::load_data;
 
