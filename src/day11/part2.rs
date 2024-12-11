@@ -1,4 +1,3 @@
-#[allow(unused_variables)]
 pub fn part2(input: &str) -> usize {
-    todo!()
+    input.len() // which is obviously not correct
 }
