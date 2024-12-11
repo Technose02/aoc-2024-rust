@@ -34,6 +34,9 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 * day 10
 ** [x] part 1
 ** [x] part 2
+* day 11
+** [x] part 1
+** [x] part 2
 
 === Performance 
 
@@ -61,4 +64,6 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 |day 09 |2 |9
 |day 10 |1 |1
 |day 10 |2 |1
+|day 11 |1 |0
+|day 11 |2 |10
 |===
