@@ -41,7 +41,7 @@ pub fn skip_at_slice(slc: &[i32], at: usize) -> SplitSlice {
     }
 }
 
-impl<'a> Iterator for SplitSlice<'a> {
+impl Iterator for SplitSlice<'_> {
     type Item = i32;
 
     fn next(&mut self) -> Option<Self::Item> {

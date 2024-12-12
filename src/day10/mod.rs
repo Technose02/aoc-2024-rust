@@ -10,7 +10,6 @@ pub struct Map {
     height: usize,
 }
 
-#[allow(dead_code)]
 impl Map {
     pub fn parse(input: &str) -> Map {
         let mut lines = input.lines();
