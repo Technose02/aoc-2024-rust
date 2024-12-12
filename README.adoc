@@ -37,7 +37,7 @@ My first attempt in taking the challenges in Rust - fantastic choice after all.
 * day 11
 ** [x] part 1
 ** [x] part 2
-* day 11
+* day 12
 ** [x] part 1
 ** [ ] part 2
 
