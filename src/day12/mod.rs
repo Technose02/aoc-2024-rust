@@ -9,7 +9,7 @@ mod tests {
 
     use super::*;
 
-    const PART1_TEST_INPUT: &str = r#"RRRRIICCFF
+    const TEST_INPUT: &str = r#"RRRRIICCFF
 RRRRIICCCF
 VVRRRCCFFF
 VVRCCCJFFF
@@ -24,16 +24,13 @@ MMMISSJEEE"#;
 
     #[test]
     fn day12_part1_works() {
-        assert_eq!(part1(PART1_TEST_INPUT), PART1_OUTPUT);
+        assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
-    const PART2_TEST_INPUT: &str = r#""#;
-
-    const PART2_OUTPUT: usize = 0;
+    const PART2_OUTPUT: usize = 1206;
 
     #[test]
-    #[ignore = "day 12 part 2 not ready yet"]
     fn day12_part2_works() {
-        assert_eq!(part2(PART2_TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
     }
 }
