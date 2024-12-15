@@ -4,10 +4,16 @@ use std::time::Instant;
 fn main() {
     let input = &load_input("input_day_14.txt");
     let mut start = Instant::now();
-    println!("result of part1 for my input: {}", day14::part1(input));
+    println!(
+        "result of part1 for my input: {}",
+        day14::part1::<103, 101>(input)
+    );
     let dur_1 = start.elapsed();
     start = Instant::now();
-    println!("result of part2 for my input: {}", day14::part2(input));
+    println!(
+        "result of part2 for my input: {}",
+        day14::part2::<103, 101>(input)
+    );
     let dur_2 = start.elapsed();
 
     println!(
