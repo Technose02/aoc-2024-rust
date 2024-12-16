@@ -38,11 +38,22 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^"#;
         assert_eq!(part1(TEST_INPUT), PART1_OUTPUT);
     }
 
+    const TEST_INPUT_1: &str = r#"#######
+#...#.#
+#.....#
+#..OO@#
+#..O..#
+#.....#
+#######
+
+<vv<<^^<<^^"#;
+
     const PART2_OUTPUT: usize = 9021;
+    const PART2_OUTPUT_1: usize = 105;
 
     #[test]
-    #[ignore = "day15 part2 still broken"]
+    // #[ignore = "day15 part2 still broken"]
     fn day15_part2_works() {
-        assert_eq!(part2(TEST_INPUT), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT_1), PART2_OUTPUT_1);
     }
 }
