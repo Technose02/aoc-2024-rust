@@ -8,7 +8,7 @@ fn test_part_1() {
 }
 
 #[test]
-#[ignore = "day15 part2 not yet implemented"]
+#[ignore = "day15 part2 still broken"]
 fn test_part_2() {
     let (input, _, output_2) = &load_data("input_day_15.txt", "output_day_15.txt");
     assert_eq!(day15::part2(input), output_2.parse::<usize>().unwrap());
