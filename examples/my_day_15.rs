@@ -13,6 +13,6 @@ fn main() {
     println!(
         "measured durations:\n\tpart1: {}ms\n\tpart2: {}ms",
         dur_1.as_millis(),
-        "--" //dur_2.as_millis()
+        dur_2.as_millis()
     );
 }

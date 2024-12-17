@@ -42,97 +42,113 @@ pub struct StorageState {
 }
 
 impl StorageState {
-    //pub fn is_wall_lower(&self, at: Position) -> bool {
-    //    if self.walls_lower.iter().any(|p| *p == at) {
-    //        return true;
-    //    }
-    //    false
-    //}
-    //pub fn is_wall_upper(&self, at: Position) -> bool {
-    //    if self
-    //        .walls_lower
-    //        .iter()
-    //        .any(|p| MoveDir::Right.apply_to(*p) == at)
-    //    {
-    //        return true;
-    //    }
-    //    false
-    //}
-    //
-    //pub fn get_box_lower(&self, at: Position) -> Option<usize> {
-    //    self.boxes_lower
-    //        .iter()
-    //        .find(|&(_, pos)| *pos == at)
-    //        .map(|e| *e.0)
-    //}
-    //
-    //pub fn get_box_upper(&self, at: Position) -> Option<usize> {
-    //    self.boxes_lower
-    //        .iter()
-    //        .find(|&(_, pos)| MoveDir::Right.apply_to(*pos) == at)
-    //        .map(|e| *e.0)
-    //}
+    fn can_move_box(
+        &self,
+        dir: &MoveDir,
+        box_id: usize,
+        affected_boxes: &mut HashSet<usize>,
+    ) -> bool {
+        let dest = {
+            let b = self.boxes.get(&box_id).expect("illegal box_id provided");
+            let dest0 = dir.apply_to((b.0, b.1));
+            let dest1 = dir.apply_to((b.0, b.2));
+            (dest0.0, dest0.1, dest1.1)
+        };
 
-    fn move_if_possible(&mut self, pos: (usize, usize), dir: &MoveDir) -> Option<(usize, usize)> {
-        let dest = dir.apply_to(pos);
+        if self.is_wall((dest.0, dest.1)) || self.is_wall((dest.0, dest.2)) {
+            return false;
+        }
 
+        affected_boxes.insert(box_id);
+
+        match *dir {
+            MoveDir::Left => {
+                if let Some(id) = self.get_box1((dest.0, dest.1)) {
+                    // a box in move-direction to the left
+                    return self.can_move_box(dir, id, affected_boxes);
+                }
+            }
+            MoveDir::Right => {
+                if let Some(id) = self.get_box0((dest.0, dest.2)) {
+                    // a box in move-direction to the right
+                    return self.can_move_box(dir, id, affected_boxes);
+                }
+            }
+            MoveDir::Up | MoveDir::Down => {
+                if let Some(id) = self.get_box0((dest.0, dest.1)) {
+                    // lined up with exactly one box
+                    return self.can_move_box(dir, id, affected_boxes);
+                }
+
+                if let Some(id_a) = self.get_box1((dest.0, dest.1)) {
+                    if let Some(id_b) = self.get_box0((dest.0, dest.2)) {
+                        // one box to the left and one box to the right affected
+
+                        return self.can_move_box(dir, id_a, affected_boxes)
+                            && self.can_move_box(dir, id_b, affected_boxes);
+                    } else {
+                        // only one box to the left affected
+                        return self.can_move_box(dir, id_a, affected_boxes);
+                    }
+                }
+
+                if let Some(id_b) = self.get_box0((dest.0, dest.2)) {
+                    // only one box to the right affected
+                    return self.can_move_box(dir, id_b, affected_boxes);
+                }
+            }
+        }
+
+        // actually the box is free to move
+        true
+    }
+
+    fn move_robot_if_possible(&mut self, dir: &MoveDir) -> bool {
+        let dest = dir.apply_to(self.robot_pos);
         if self.is_wall(dest) {
-            return None;
-        }
-        Some(dest) // wrong!
-
-        /*
-        if self.is_wall_lower(dest) || self.is_wall_upper(dest) {
-            return None;
-        }
-
-        if let Some(id) = self.get_box_lower(dest) {
-            if *dir == MoveDir::Left || *dir == MoveDir::Right {
-                if let Some(_) = self.move_if_possible(dir.apply_to(dest), dir) {
-                    println!("must move box {id} in dir '{dir:?}'");
-                    let box_lower_pos = *self.boxes_lower.get(&id).unwrap();
-                    *self.boxes_lower.get_mut(&id).unwrap() = dir.apply_to(box_lower_pos);
-                    Some(dest)
-                } else {
-                    None
+            return false;
+        } else if let Some(id0) = self.get_box0(dest) {
+            let mut affected_boxes = HashSet::new();
+            if self.can_move_box(dir, id0, &mut affected_boxes) {
+                for affected_box in affected_boxes {
+                    let val: &mut Box = self.boxes.get_mut(&affected_box).unwrap();
+                    let v1 = dir.apply_to((val.0, val.1));
+                    let v2 = dir.apply_to((val.0, val.2));
+                    *val = Box(v1.0, v1.1, v2.1);
                 }
+                self.robot_pos = dest;
+                return true;
             } else {
-                if let Some(_) = self.move_if_possible(dest, dir) {
-                    println!("must move box {id} in dir '{dir:?}'");
-                    let box_lower_pos = *self.boxes_lower.get(&id).unwrap();
-                    *self.boxes_lower.get_mut(&id).unwrap() = dir.apply_to(box_lower_pos);
-                    Some(dest)
-                } else {
-                    None
+                return false;
+            }
+        } else if let Some(id1) = self.get_box1(dest) {
+            let mut affected_boxes = HashSet::new();
+            if self.can_move_box(dir, id1, &mut affected_boxes) {
+                for affected_box in affected_boxes {
+                    let val: &mut Box = self.boxes.get_mut(&affected_box).unwrap();
+                    let v1 = dir.apply_to((val.0, val.1));
+                    let v2 = dir.apply_to((val.0, val.2));
+                    *val = Box(v1.0, v1.1, v2.1);
                 }
-            }
-        } else if let Some(id) = self.get_box_upper(dest) {
-            if let Some(_) = self.move_if_possible(dir.apply_to(dest), dir) {
-                println!("must move box {id} in dir '{dir:?}'");
-                let box_lower_pos = *self.boxes_lower.get(&id).unwrap();
-                *self.boxes_lower.get_mut(&id).unwrap() = dir.apply_to(box_lower_pos);
-                Some(dest)
+                self.robot_pos = dest;
+                return true;
             } else {
-                None
+                return false;
             }
-        } else {
-            Some(dest)
-        }*/
+        }
+        self.robot_pos = dest;
+        true
     }
 
     #[allow(unused)]
     pub fn run_robot_movements(&mut self, movements: &[MoveDir]) -> usize {
-        /*for (k, dir) in movements.iter().enumerate() {
-            if let Some(next_robot_pos) = self.move_if_possible(self.robot_pos, dir) {
-                self.robot_pos = next_robot_pos;
-            }
-            println!("\nafter {} moves:\n", k + 1);
-            println!("{:?}", self.boxes_lower);
-            self.print();
+        for (k, dir) in movements.iter().enumerate() {
+            self.move_robot_if_possible(dir);
+            //println!("\nafter {} moves:\n", _k + 1);
+            //self.print();
         }
 
-        self.calc_gps_sum()*/
-        0
+        self.calc_gps_sum()
     }
 
     fn is_wall(&self, at: (usize, usize)) -> bool {
@@ -141,15 +157,18 @@ impl StorageState {
             .any(|&Wall(j, i1, i2)| j == at.0 && (i1 == at.1 || i2 == at.1))
     }
 
-    fn is_box0(&self, at: (usize, usize)) -> bool {
+    fn get_box0(&self, at: (usize, usize)) -> Option<usize> {
         self.boxes
-            .values()
-            .any(|&Box(j, i, _)| j == at.0 && i == at.1)
+            .iter()
+            .find(|(_, Box(j, i, _))| *j == at.0 && *i == at.1)
+            .map(|(&id, _)| id)
     }
-    fn is_box1(&self, at: (usize, usize)) -> bool {
+
+    fn get_box1(&self, at: (usize, usize)) -> Option<usize> {
         self.boxes
-            .values()
-            .any(|&Box(j, _, i)| j == at.0 && i == at.1)
+            .iter()
+            .find(|(_, Box(j, _, i))| *j == at.0 && *i == at.1)
+            .map(|(&id, _)| id)
     }
 
     #[allow(dead_code)]
@@ -159,9 +178,9 @@ impl StorageState {
             for i in 0..self.width {
                 if self.is_wall((j, i)) {
                     row.push(WALL);
-                } else if self.is_box0((j, i)) {
+                } else if self.get_box0((j, i)).is_some() {
                     row.push(BOX0);
-                } else if self.is_box1((j, i)) {
+                } else if self.get_box1((j, i)).is_some() {
                     row.push(BOX1);
                 } else if self.robot_pos == (j, i) {
                     row.push(ROBOT);
@@ -174,16 +193,11 @@ impl StorageState {
     }
 
     pub fn calc_gps_sum(&self) -> usize {
-        /*let mut s = 0;
-        for p in self.boxes_lower.values() {
-            let (j, i) = match p {
-                Position::Lower(j, i) => (j, 2 * i),
-                Position::Upper(j, i) => (j, 2 * i + 1),
-            };
+        let mut s = 0;
+        for Box(j, i, _) in self.boxes.values() {
             s += j * 100 + i;
         }
-        s*/
-        0
+        s
     }
 }
 
@@ -244,8 +258,8 @@ pub fn parse_input(input: &str) -> (StorageState, Vec<MoveDir>) {
         boxes,
         robot_pos: robot_pos.unwrap(),
     };
-    println!("initial state:");
-    storage_state.print();
+    //println!("initial state:");
+    //storage_state.print();
 
     (storage_state, movements)
 }
@@ -253,9 +267,5 @@ pub fn parse_input(input: &str) -> (StorageState, Vec<MoveDir>) {
 pub fn part2(input: &str) -> usize {
     let (mut storage_state, movements) = parse_input(input);
 
-    println!("walls: {:?}", storage_state.walls);
-    println!("boxes: {:?}", storage_state.boxes);
-
-    storage_state.run_robot_movements(&movements[0..])
-    //storage_state.run_robot_movements(&movements)
+    storage_state.run_robot_movements(&movements)
 }
