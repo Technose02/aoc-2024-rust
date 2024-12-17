@@ -1,6 +1,8 @@
 use aoc2024_rust::{day17, util::load_input};
 use std::time::Instant;
 
+// part 2: higher than 4235660
+
 fn main() {
     let input = &load_input("input_day_17.txt");
     let mut start = Instant::now();
