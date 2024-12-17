@@ -109,7 +109,7 @@ fn run_program(
             1 =>
             // bxl
             {
-                *register_b = *register_b ^ (as_literal_operand(operand) as u64);
+                *register_b ^= as_literal_operand(operand) as u64;
                 instruction_ptr += 2;
             }
 
@@ -117,7 +117,7 @@ fn run_program(
             // bst
             {
                 let operand = as_combo_operand(operand, register_a, register_b, register_c);
-                *register_b = ((operand % 8) & 7) as u64;
+                *register_b = (operand % 8) & 7;
                 instruction_ptr += 2;
             }
 
@@ -134,7 +134,7 @@ fn run_program(
             4 =>
             // bxc
             {
-                *register_b = *register_b ^ *register_c;
+                *register_b ^= *register_c;
                 instruction_ptr += 2;
             }
 
@@ -192,8 +192,6 @@ pub fn part1(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    use std::process::Output;
 
     use super::*;
 
