@@ -34,6 +34,6 @@ Program: 0,3,5,4,3,0"#;
 
     #[test]
     fn day17_part2_works() {
-        assert_eq!(part2(TEST_INPUT_2, 32768, 8), PART2_OUTPUT);
+        assert_eq!(part2(TEST_INPUT_2), PART2_OUTPUT);
     }
 }

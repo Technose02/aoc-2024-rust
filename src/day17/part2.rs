@@ -1,5 +1,3 @@
-use std::process::Output;
-
 type Register = u64;
 type Program = Vec<u8>;
 
@@ -81,19 +79,12 @@ fn run_program(
     register_c: &mut Register,
     program: &Vec<u8>,
     output: &mut Vec<u8>,
-) -> usize {
+) {
     let mut instruction_ptr = 0;
 
     let program_length = program.len();
 
-    let a_initial = *register_a;
-
     loop {
-        //let l = output.len();
-        //if program[0..l] != output[..] {
-        //println!("{:?} != {:?}", *output, *program);
-        //    return false;
-        //}
         if instruction_ptr == program_length {
             break;
         }
@@ -178,61 +169,224 @@ fn run_program(
             _ => panic!("not a 3-bit number: {opcode}"),
         }
     }
-    /*if output.len() > program_length {
-        println!("offset {a_initial} and/or step too large");
-        return false;
-    }
-    //println!("{}", output.len());
-    if *output == *program {
-        true
-    } else {
-        //println!("{:?} != {:?}", *output, *program);
-        false
-    }*/
-    output.len()
 }
 
-pub fn part2(input: &str, brute_force_offset: u64, step: u64) -> u64 {
-    let (_, register_b, register_c, program) = parse_program_spec(input);
+#[derive(Debug)]
+struct Machine {
+    initial_b: u64,
+    initial_c: u64,
+    program: Vec<u8>,
+}
 
-    let mut register_a_iter = brute_force_offset;
-    loop {
-        let mut cur_register_a = register_a_iter;
-        let mut cur_register_b = register_b;
-        let mut cur_register_c = register_c;
-        let mut cur_output = Vec::new();
-        let l = run_program(
-            &mut cur_register_a,
-            &mut cur_register_b,
-            &mut cur_register_c,
-            &program,
-            &mut cur_output,
+#[derive(PartialEq)]
+enum SimpleCompare {
+    Lower,
+    Equal,
+    Higher,
+}
+
+impl Machine {
+    pub fn from_input(input: &str) -> Self {
+        let (_, initial_b, initial_c, program) = parse_program_spec(input);
+
+        Self {
+            initial_b,
+            initial_c,
+            program,
+        }
+    }
+
+    pub fn run_for_output(&self, register_a: u64) -> Vec<u8> {
+        let mut init_register_a = register_a;
+        let mut init_register_b = self.initial_b;
+        let mut init_register_c = self.initial_c;
+        let mut output = Vec::new();
+
+        run_program(
+            &mut init_register_a,
+            &mut init_register_b,
+            &mut init_register_c,
+            &self.program,
+            &mut output,
         );
 
-        if program == cur_output {
-            return register_a_iter;
-        }
-
-        if l < program.len() {
-            println!("output too short ({l}), adjust your offset");
-            return 0;
-        }
-
-        if l > program.len() {
-            println!("output too long ({l}), adjust your offset and/or stepsize");
-            return 0;
-        }
-
-        //let mut correct_digits_from_end = 0;
-        //while program[l - correct_digits_from_end - 1]
-        //    == cur_output[l - correct_digits_from_end - 1]
-        //{
-        //    correct_digits_from_end += 1;
-        //}
-
-        //println!("correct_digits_from_end (A was {register_a_iter}): {correct_digits_from_end}",);
-
-        register_a_iter += step;
+        output
     }
-    register_a_iter
+
+    pub fn run_for_correct_output_len(&self, register_a: u64) -> SimpleCompare {
+        let output_len = self.run_for_output(register_a).len();
+        let program_len = self.program.len();
+
+        if output_len < program_len {
+            SimpleCompare::Lower
+        } else if output_len > program_len {
+            SimpleCompare::Higher
+        } else {
+            SimpleCompare::Equal
+        }
+    }
+
+    pub fn run_for_error(&self, register_a: u64) -> Option<u64> {
+        let output = self.run_for_output(register_a);
+
+        if output.len() != self.program.len() {
+            return None;
+        }
+
+        let mut error = output.len() as u64;
+        for (k, val) in output.iter().enumerate().rev() {
+            if *val != self.program[k] {
+                break;
+            }
+            error -= 1;
+        }
+        Some(error)
+    }
+}
+
+#[derive(Debug)]
+struct Optimizer {
+    machine: Machine,
+    max_too_low: u64,
+    min_too_high: u64,
+}
+
+impl Optimizer {
+    fn determine_outer_bounds(machine: &Machine) -> (u64, u64) {
+        // find range where output-length is correct
+        if matches!(
+            machine.run_for_correct_output_len(1),
+            SimpleCompare::Higher | SimpleCompare::Equal
+        ) {
+            todo!();
+        }
+
+        let mut max_too_low = 1;
+        let mut min_too_high = None;
+
+        let mut base = max_too_low;
+        while min_too_high.is_none() {
+            let n = 2 * base;
+            match machine.run_for_correct_output_len(n) {
+                SimpleCompare::Lower => {
+                    max_too_low = n;
+                    base = n;
+                }
+                SimpleCompare::Higher => {
+                    min_too_high = Some(n);
+                }
+                SimpleCompare::Equal => {
+                    base = n;
+                }
+            }
+        }
+        let mut min_too_high = min_too_high.unwrap();
+
+        // refine max_too_low
+        let mut center = max_too_low + (min_too_high - max_too_low) / 2;
+        loop {
+            match machine.run_for_correct_output_len(center) {
+                SimpleCompare::Lower => {
+                    max_too_low = center;
+                    center = max_too_low + (min_too_high - max_too_low) / 2;
+                }
+                SimpleCompare::Higher => {
+                    min_too_high = center;
+                    center = max_too_low + (min_too_high - max_too_low) / 2;
+                }
+                SimpleCompare::Equal => {
+                    if center == max_too_low + 1 {
+                        break;
+                    }
+                    center = max_too_low + (center - max_too_low) / 2;
+                }
+            }
+        }
+
+        // refine min_too_high
+        let mut center = max_too_low + (min_too_high - max_too_low) / 2;
+        loop {
+            match machine.run_for_correct_output_len(center) {
+                SimpleCompare::Lower => {
+                    panic!("value should be Equal");
+                }
+                SimpleCompare::Higher => {
+                    min_too_high = center;
+                    center = max_too_low + (min_too_high - max_too_low) / 2;
+                }
+                SimpleCompare::Equal => {
+                    if center == min_too_high - 1 {
+                        break;
+                    }
+                    center = center + (min_too_high - center) / 2;
+                }
+            }
+        }
+
+        (max_too_low, min_too_high)
+    }
+
+    pub fn new(machine: Machine) -> Self {
+        let bounds = Optimizer::determine_outer_bounds(&machine);
+
+        Optimizer {
+            machine,
+            max_too_low: bounds.0,
+            min_too_high: bounds.1,
+        }
+    }
+
+    pub fn find_register_a(&self) -> Option<u64> {
+        let err_lower = self.machine.run_for_error(self.max_too_low + 1).unwrap();
+        let err_upper = self.machine.run_for_error(self.min_too_high - 1).unwrap();
+
+        if let Some(mut res) =
+            self.seek_in_interval(self.max_too_low, self.min_too_high, err_lower, err_upper)
+        {
+            while let Some(0) = self.machine.run_for_error(res) {
+                res -= 1;
+            }
+            Some(res + 1)
+        } else {
+            None
+        }
+    }
+
+    fn seek_in_interval(
+        &self,
+        lower: u64,
+        upper: u64,
+        err_lower: u64,
+        err_upper: u64,
+    ) -> Option<u64> {
+        let center = lower + (upper - lower) / 2;
+        if center == lower || center == upper {
+            return None;
+        }
+        let err_center = self.machine.run_for_error(center).unwrap();
+        println!("======");
+        println!("err at {lower}: {err_lower}");
+        println!("err at {center}: {err_center}");
+        println!("err at {upper}: {err_upper}");
+        println!("======");
+        if err_lower == 0 {
+            return Some(center);
+        }
+        if let Some(res) = self.seek_in_interval(center, upper, err_center, err_upper) {
+            return Some(res);
+        }
+        if let Some(res) = self.seek_in_interval(lower, center, err_lower, err_center) {
+            return Some(res);
+        }
+        None
+    }
+}
+
+pub fn part2(input: &str) -> u64 {
+    let machine = Machine::from_input(input);
+
+    let optimizer = Optimizer::new(machine);
+    println!("{:?}", optimizer);
+
+    optimizer.find_register_a().unwrap()
 }

@@ -79,7 +79,7 @@ fn run_program(
     register_c: &mut Register,
     program: Vec<u8>,
     output: &mut Vec<u8>,
-) -> String {
+) {
     let mut instruction_ptr = 0;
 
     let program_length = program.len();
@@ -169,13 +169,12 @@ fn run_program(
             _ => panic!("not a 3-bit number: {opcode}"),
         }
     }
-    "".into()
 }
 
 pub fn part1(input: &str) -> String {
     let (mut register_a, mut register_b, mut register_c, program) = parse_program_spec(input);
     let mut output = Vec::new();
-    let _res = run_program(
+    run_program(
         &mut register_a,
         &mut register_b,
         &mut register_c,
