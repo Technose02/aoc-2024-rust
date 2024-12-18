@@ -1,3 +1,5 @@
+use std::process::Output;
+
 type Register = u64;
 type Program = Vec<u8>;
 
@@ -79,17 +81,19 @@ fn run_program(
     register_c: &mut Register,
     program: &Vec<u8>,
     output: &mut Vec<u8>,
-) -> bool {
+) -> usize {
     let mut instruction_ptr = 0;
 
     let program_length = program.len();
 
+    let a_initial = *register_a;
+
     loop {
-        let l = output.len();
-        if program[0..l] != output[..] {
-            //println!("{:?} != {:?}", *output, *program);
-            return false;
-        }
+        //let l = output.len();
+        //if program[0..l] != output[..] {
+        //println!("{:?} != {:?}", *output, *program);
+        //    return false;
+        //}
         if instruction_ptr == program_length {
             break;
         }
@@ -174,33 +178,61 @@ fn run_program(
             _ => panic!("not a 3-bit number: {opcode}"),
         }
     }
+    /*if output.len() > program_length {
+        println!("offset {a_initial} and/or step too large");
+        return false;
+    }
+    //println!("{}", output.len());
     if *output == *program {
         true
     } else {
         //println!("{:?} != {:?}", *output, *program);
         false
-    }
+    }*/
+    output.len()
 }
 
-pub fn part2(input: &str) -> u64 {
+pub fn part2(input: &str, brute_force_offset: u64, step: u64) -> u64 {
     let (_, register_b, register_c, program) = parse_program_spec(input);
 
-    let mut register_a_iter = 0;
+    let mut register_a_iter = brute_force_offset;
     loop {
         let mut cur_register_a = register_a_iter;
         let mut cur_register_b = register_b;
         let mut cur_register_c = register_c;
         let mut cur_output = Vec::new();
-        if run_program(
+        let l = run_program(
             &mut cur_register_a,
             &mut cur_register_b,
             &mut cur_register_c,
             &program,
             &mut cur_output,
-        ) {
-            break;
+        );
+
+        if program == cur_output {
+            return register_a_iter;
         }
-        register_a_iter += 1;
+
+        if l < program.len() {
+            println!("output too short ({l}), adjust your offset");
+            return 0;
+        }
+
+        if l > program.len() {
+            println!("output too long ({l}), adjust your offset and/or stepsize");
+            return 0;
+        }
+
+        //let mut correct_digits_from_end = 0;
+        //while program[l - correct_digits_from_end - 1]
+        //    == cur_output[l - correct_digits_from_end - 1]
+        //{
+        //    correct_digits_from_end += 1;
+        //}
+
+        //println!("correct_digits_from_end (A was {register_a_iter}): {correct_digits_from_end}",);
+
+        register_a_iter += step;
     }
     register_a_iter
 }
